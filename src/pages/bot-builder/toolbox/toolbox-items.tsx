@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDomServer from 'react-dom/server';
 import { localize } from '@deriv-com/translations';
-import { isMultipliersAvailable } from '../../../external/bot-skeleton/scratch/utils/multiplier-utils';
 
 const Arg = ({ ...props }) => {
     return React.createElement('arg', props);
@@ -51,10 +50,8 @@ const Xml = ({ ...props }) => {
     return React.createElement('xml', props);
 };
 
-export const ToolboxItems = () => {
-    const multipliersAvailable = isMultipliersAvailable();
-
-    return ReactDomServer.renderToStaticMarkup(
+export const ToolboxItems = () =>
+    ReactDomServer.renderToStaticMarkup(
         <Xml xmlns='http://www.w3.org/1999/xhtml' id='toolbox'>
             <Category id='trade_parameters' name={localize('Trade parameters')}>
                 <Block type='trade_definition'>
@@ -120,36 +117,30 @@ export const ToolboxItems = () => {
                     </Value>
                     <Field name='AMOUNT_LIMITS' />
                 </Block>
-                {multipliersAvailable && (
-                    <Block type='trade_definition_multiplier'>
-                        <Field name='MULTIPLIERTYPE_LIST' />
-                        <Field name='CURRENCY_LIST'>USD</Field>
-                        <Value name='AMOUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>1</Field>
-                            </Shadow>
-                        </Value>
-                        <Field name='AMOUNT_LIMITS' />
-                    </Block>
-                )}
-                {multipliersAvailable && (
-                    <Block type='multiplier_take_profit'>
-                        <Value name='AMOUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                )}
-                {multipliersAvailable && (
-                    <Block type='multiplier_stop_loss'>
-                        <Value name='AMOUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                )}
+                <Block type='trade_definition_multiplier'>
+                    <Field name='MULTIPLIERTYPE_LIST' />
+                    <Field name='CURRENCY_LIST'>USD</Field>
+                    <Value name='AMOUNT'>
+                        <Shadow type='math_number'>
+                            <Field name='NUM'>1</Field>
+                        </Shadow>
+                    </Value>
+                    <Field name='AMOUNT_LIMITS' />
+                </Block>
+                <Block type='multiplier_take_profit'>
+                    <Value name='AMOUNT'>
+                        <Shadow type='math_number'>
+                            <Field name='NUM'>0</Field>
+                        </Shadow>
+                    </Value>
+                </Block>
+                <Block type='multiplier_stop_loss'>
+                    <Value name='AMOUNT'>
+                        <Shadow type='math_number'>
+                            <Field name='NUM'>0</Field>
+                        </Shadow>
+                    </Value>
+                </Block>
                 <Block type='trade_definition_accumulator'>
                     <Field name='GROWTHRATE_LIST' />
                     <Field name='CURRENCY_LIST'>USD</Field>
@@ -392,13 +383,6 @@ export const ToolboxItems = () => {
                     <Block type='stat_list' />
                     <Block type='ticks' />
                     <Block type='lastDigitList' />
-                    <Block type='trendDirection'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>20</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
                     <Block type='check_direction' />
                     <Block type='is_candle_black' />
                     <Block type='read_ohlc'>
@@ -437,143 +421,6 @@ export const ToolboxItems = () => {
                     <Block type='balance' />
                     <Block type='total_profit' />
                     <Block type='total_runs' />
-                </Category>
-            </Category>
-
-            <Category name={localize('🔥 Logics')} id='fire_logics'>
-                <Block type='rise_fall_logic'>
-                    <Value name='TICK_COUNT'>
-                        <Shadow type='math_number'>
-                            <Field name='NUM'>20</Field>
-                        </Shadow>
-                    </Value>
-                </Block>
-                <Category name={localize('Premium Analysis')} id='premium_analysis'>
-                    <Block type='markov_probability'>
-                        <Value name='TARGET_DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='PREV_DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>100</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='market_entropy'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>100</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='signal_confidence'>
-                        <Value name='TARGET_DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>100</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                </Category>
-                <Category name={localize('New Logics Analysis')} id='new_logics_analysis'>
-                    <Block type='digitFrequencyAnalysis'>
-                        <Value name='DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>50</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='streakDetection'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>10</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='digitRangeCounter'>
-                        <Value name='MIN_DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='MAX_DIGIT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>2</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>50</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='volatilityScore'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>50</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='trendDirection'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>20</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='digitByRank'>
-                        <Value name='RANK'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>3</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>100</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='identifyCandlePattern'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>3</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='analyzeMomentum'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>10</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                    <Block type='checkVolumeHealth'>
-                        <Value name='TICK_COUNT'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>20</Field>
-                            </Shadow>
-                        </Value>
-                    </Block>
-                </Category>
-                <Category name={localize('Analysis Logics')} id='analysis_logics'>
-                    <Block type='analysis_get_power' />
-                    <Block type='analysis_is_increasing' />
                 </Category>
             </Category>
 
@@ -747,24 +594,6 @@ export const ToolboxItems = () => {
                         </Value>
                     </Block>
                     <Block type='math_random_float' />
-                </Category>
-
-                <Category name={localize('Money Management')} id='money_management'>
-                    <Block type='martingaleWithCompounding'>
-                        <Value name='BASE_STAKE'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>0.35</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='MULTIPLIER'>
-                            <Shadow type='math_number'>
-                                <Field name='NUM'>2.1</Field>
-                            </Shadow>
-                        </Value>
-                        <Value name='PROFIT'>
-                            <Block type='total_profit' />
-                        </Value>
-                    </Block>
                 </Category>
 
                 <Category name={localize('Text')} id='text'>
@@ -1828,4 +1657,3 @@ export const ToolboxItems = () => {
             </Examples>
         </Xml>
     );
-};

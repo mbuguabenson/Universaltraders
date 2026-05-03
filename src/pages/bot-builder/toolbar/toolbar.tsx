@@ -4,19 +4,40 @@ import Dialog from '@/components/shared_ui/dialog';
 import { useStore } from '@/hooks/useStore';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
+/* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
+/* [/AI] */
+import ToolbarButton from './toolbar-button';
 import WorkspaceGroup from './workspace-group';
 
 const Toolbar = observer(() => {
-    const { run_panel, toolbar } = useStore();
+    const { run_panel, toolbar, quick_strategy } = useStore();
     const { isDesktop } = useDevice();
     const { is_dialog_open, closeResetDialog, onResetOkButtonClick: onOkButtonClick } = toolbar;
     const { is_running } = run_panel;
+    const { setFormVisibility } = quick_strategy;
     const confirm_button_text = is_running ? localize('Yes') : localize('OK');
     const cancel_button_text = is_running ? localize('No') : localize('Cancel');
+    const handleQuickStrategyOpen = () => {
+        setFormVisibility(true);
+        /* [AI] - Analytics event tracking removed - see migrate-docs/MONITORING_PACKAGES.md for re-implementation guide */
+        /* [/AI] */
+    };
     return (
         <React.Fragment>
             <div className='toolbar dashboard__toolbar' data-testid='dt_dashboard_toolbar'>
-                <div className='toolbar__section'>{isDesktop && <WorkspaceGroup />}</div>
+                <div className='toolbar__section'>
+                    {!isDesktop && (
+                        <ToolbarButton
+                            popover_message={localize('Click here to start building your Deriv Bot.')}
+                            button_id='db-toolbar__get-started-button'
+                            button_classname='toolbar__btn toolbar__btn--icon toolbar__btn--start'
+                            buttonOnClick={handleQuickStrategyOpen}
+                            button_text={localize('Quick strategy')}
+                            is_bot_running={is_running}
+                        />
+                    )}
+                    {isDesktop && <WorkspaceGroup />}
+                </div>
             </div>
             {!isDesktop && <WorkspaceGroup />}
             <Dialog
@@ -30,7 +51,6 @@ const Toolbar = observer(() => {
                 is_mobile_full_width={false}
                 className={'toolbar__dialog'}
                 has_close_icon
-                login={() => {}}
             >
                 {is_running ? (
                     <Localize

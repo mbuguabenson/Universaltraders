@@ -93,7 +93,7 @@ export const validateErrorOnBlockDelete = () => {
 export const updateWorkspaceName = () => {
     if (!DBotStore?.instance) return;
     const { load_modal } = DBotStore.instance;
-    const file_name = load_modal?.dashboard_strategies?.[0]?.name ?? '@deriv/bot';
+    const file_name = load_modal?.dashboard_strategies?.[0]?.name ?? config().default_file_name;
     if (document.title.indexOf('-') > -1) {
         const string_to_replace = document.title.substr(document.title.indexOf('-'));
         const new_document_title = document.title.replace(string_to_replace, `- ${file_name}`);
@@ -104,9 +104,7 @@ export const updateWorkspaceName = () => {
     }
 };
 
-export const isMainBlock = block_type => {
-    return config().mainBlocks.indexOf(block_type) >= 0;
-};
+export const isMainBlock = block_type => config().mainBlocks.indexOf(block_type) >= 0;
 
 export const oppositesToDropdownOptions = opposite_name => {
     return opposite_name.map(contract_type => {
@@ -155,13 +153,11 @@ export const load = async ({
     setLoading(true);
     // Delay execution to allow fully previewing previous strategy if users quickly switch between strategies.
     await delayExecution(100);
-    const showInvalidStrategyError = message => {
+    const showInvalidStrategyError = () => {
         setLoadedLocalFile(null);
-        const errorContent = message ? { message } : notification_message().invalid_xml;
-        botNotification(errorContent);
+        botNotification(notification_message().invalid_xml);
         setLoading(false);
-        const error_message =
-            message || localize('XML file contains unsupported elements. Please check or modify file.');
+        const error_message = localize('XML file contains unsupported elements. Please check or modify file.');
         globalObserver.emit('ui.log.error', error_message);
         return {
             error: error_message,
@@ -172,12 +168,12 @@ export const load = async ({
     try {
         const xmlDoc = new DOMParser().parseFromString(block_string, 'application/xml');
         if (xmlDoc.getElementsByTagName('parsererror').length) {
-            return showInvalidStrategyError(localize('XML Parsing Error: The file content is not valid XML.'));
+            return showInvalidStrategyError();
         } else {
             show_snackbar && botNotification(notification_message().BOT_IMPORT);
         }
     } catch (e) {
-        return showInvalidStrategyError(localize('Xml Parsing Exception: ') + e.message);
+        return showInvalidStrategyError();
     }
 
     let xml;
@@ -185,7 +181,7 @@ export const load = async ({
     try {
         xml = window.Blockly.utils.xml.textToDom(block_string);
     } catch (e) {
-        return showInvalidStrategyError(localize('Blockly XML Parsing Error: ') + e.message);
+        return showInvalidStrategyError();
     }
     const blockConversion = new BlockConversion();
     xml = blockConversion.convertStrategy(xml, showIncompatibleStrategyDialog);
@@ -193,22 +189,16 @@ export const load = async ({
 
     // Check if there are any blocks in this strategy.
     if (!blockly_xml.length) {
-        return showInvalidStrategyError(localize('No blocks found in the strategy file.'));
+        return showInvalidStrategyError();
     }
 
     // Check if all block types in XML are allowed.
-    const invalid_blocks = [];
-    Array.from(blockly_xml).forEach(block => {
+    const has_invalid_blocks = Array.from(blockly_xml).some(block => {
         const block_type = block.getAttribute('type');
-        if (!Object.keys(window.Blockly.Blocks).includes(block_type)) {
-            invalid_blocks.push(block_type);
-        }
+        return !Object.keys(window.Blockly.Blocks).includes(block_type);
     });
-
-    if (invalid_blocks.length > 0) {
-        // Dedup
-        const unique_invalid = [...new Set(invalid_blocks)];
-        return showInvalidStrategyError(localize('Unsupported block types found: ') + unique_invalid.join(', '));
+    if (has_invalid_blocks) {
+        return showInvalidStrategyError();
     }
 
     try {
@@ -777,8 +767,6 @@ export const appendCollapsedProcedureBlocksFields = instance => {
 
 export const setCurrency = block_instance => {
     const currency_field = block_instance.getField('CURRENCY_LIST');
-    const { client } = DBotStore.instance;
-    if (!client) return;
-    const { currency } = client;
+    const { currency } = DBotStore.instance.client;
     currency_field?.setValue(getCurrencyDisplayCode(currency));
 };

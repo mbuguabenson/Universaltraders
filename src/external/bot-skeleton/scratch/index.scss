@@ -182,7 +182,7 @@ $colour_toolboxSelected: $black;
         color: #333;
         padding: 8px;
         font-size: 12px;
-        font-family: var(--font-display);
+        font-family: 'IBM Plex Sans', sans-serif;
         line-height: 1.5;
         letter-spacing: normal;
         position: absolute;
@@ -1252,4 +1252,3 @@ drag a block and selected text moves instead.
 g.editing .blocklyEditableText {
     display: none !important;
 }
-
